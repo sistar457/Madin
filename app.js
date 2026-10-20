@@ -2,7 +2,7 @@
 // KONFIGURASI & STATE APLIKASI
 // ============================================
 // ⚠️ GANTI DENGAN URL WEB APP /exec ANDA!
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwe-PLACEHOLDER-EXEC-URL/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwxaKR2kVykG4gbbxCCx335rmHsCGINLIiyeFh5RZCZj8Jo1IaXZEA1ZKzZV7byE7bp/exec';
 
 let currentUser = null;
 let appData = {
