@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Informasi Diniyah - Hanca, Kehadiran & SPP</title>
+  <!-- Google Fonts & FontAwesome Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- LOADING SPINNER GLOBAL -->
+  <div id="loading" class="loading-overlay">
+    <div class="spinner"></div>
+    <p>Memuat Data Diniyah...</p>
+  </div>
+
+  <!-- NOTIFIKASI TOAST -->
+  <div id="notif" class="notif"></div>
+
+  <!-- AUTH / LOGIN PAGE -->
+  <div id="login-page" class="page active">
+    <div class="login-card">
+      <div class="login-header">
+        <i class="fa-solid fa-mosque login-icon"></i>
+        <h2 id="login-lembaga-nama">Madrasah Diniyah</h2>
+        <p>Sistem Hanca, Kehadiran & Syahriyyah</p>
+      </div>
+      <form id="login-form">
+        <div class="form-group">
+          <label><i class="fa-solid fa-user"></i> Username</label>
+          <input type="text" id="login-username" required placeholder="Masukkan username">
+        </div>
+        <div class="form-group">
+          <label><i class="fa-solid fa-lock"></i> Password</label>
+          <input type="password" id="login-password" required placeholder="Masukkan password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">
+          <i class="fa-solid fa-right-to-bracket"></i> Masuk Aplikasi
+        </button>
+      </form>
+      <div class="login-footer">
+        <p><small>Default Admin: <b>admin</b> / <b>admin123</b></small></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP WRAPPER (Muncul Setelah Login) -->
+  <div id="app-wrapper" class="app-wrapper" style="display: none;">
+    
+    <!-- HEADER BAR -->
+    <header class="app-header">
+      <div class="header-brand">
+        <img id="header-logo" src="" alt="Logo" class="header-logo">
+        <div>
+          <h1 id="header-title">Madrasah Diniyah</h1>
+          <span id="user-badge" class="badge badge-gold">Ustadz</span>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="handleLogout()" title="Keluar">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      </button>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content">
+
+      <!-- TAB 1: SETORAN HANCA HARIAN -->
+      <section id="tab-hanca" class="tab-content active">
+        <div class="card-title">
+          <i class="fa-solid fa-book-quran"></i>
+          <h2>Setoran Hanca Harian</h2>
+        </div>
+        <form id="form-hanca" class="form-card">
+          <div class="form-group">
+            <label><i class="fa-solid fa-campground"></i> Pilih Halaqah</label>
+            <select id="hanca-halaqah" required onchange="filterSantriByHalaqah('hanca-halaqah', 'hanca-santri')">
+              <option value="">-- Pilih Halaqah --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-user-graduate"></i> Pilih Santri</label>
+            <select id="hanca-santri" required>
+              <option value="">-- Pilih Santri --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-book"></i> Mata Pelajaran / Kitab</label>
+            <select id="hanca-kitab" required>
+              <option value="">-- Pilih Kitab --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-chart-line"></i> Pencapaian Hari Ini (Hanca)</label>
+            <input type="text" id="hanca-pencapaian" required placeholder="Contoh: Surah An-Naba Ayat 1-15 / Halaman 24 / Bab Thaharah">
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-comment-dots"></i> Catatan Ustadz/Ustadzah (Opsional)</label>
+
+            <textarea id="hanca-catatan" rows="2" placeholder="Lancar, tajwid perlu ditingkatkan..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fa-solid fa-floppy-disk"></i> Simpan Setoran Hanca
+          </button>
+        </form>
+      </section>
+
+      <!-- TAB 2: KEHADIRAN SANTRI -->
+      <section id="tab-kehadiran" class="tab-content">
+        <div class="card-title">
+          <i class="fa-solid fa-calendar-check"></i>
+          <h2>Kehadiran Santri</h2>
+        </div>
+        <div class="form-card">
+          <div class="form-group">
+            <label><i class="fa-solid fa-campground"></i> Pilih Halaqah untuk Presensi</label>
+            <select id="kehadiran-halaqah" onchange="renderPresensiList()">
+              <option value="">-- Pilih Halaqah --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-calendar-day"></i> Tanggal Presensi</label>
+            <input type="date" id="kehadiran-tanggal">
+          </div>
+
+          <div id="presensi-container" class="presensi-list">
+            <!-- List Santri akan dirender secara dinamis -->
+            <p class="text-muted text-center">Silakan pilih Halaqah terlebih dahulu.</p>
+          </div>
+
+          <button id="btn-save-kehadiran" class="btn btn-primary btn-block" style="display:none; margin-top: 15px;" onclick="submitKehadiran()">
+            <i class="fa-solid fa-check-double"></i> Simpan Presensi Hari Ini
+          </button>
+        </div>
+      </section>
+
+      <!-- TAB 3: SPP / SYAHRIYYAH -->
+      <section id="tab-spp" class="tab-content">
+        <div class="card-title">
+          <i class="fa-solid fa-coins"></i>
+          <h2>Syahriyyah / SPP Santri</h2>
+        </div>
+
+        <!-- Role Admin: Setup SPP & Input Bayar -->
+        <div id="spp-admin-view" class="form-card">
+          <div class="spp-summary-box">
+            <span>Nominal SPP Bulanan:</span>
+            <h3 id="display-nominal-spp">Rp 0</h3>
+            <button class="btn btn-gold btn-sm admin-only" onclick="promptUpdateSpp()">
+              <i class="fa-solid fa-pen-to-square"></i> Ubah Nominal
+            </button>
+          </div>
+
+          <hr class="divider">
+
+          <h4 style="margin-bottom:12px;"><i class="fa-solid fa-receipt"></i> Catat Pembayaran SPP</h4>
+          <form id="form-spp-bayar">
+            <div class="form-group">
+              <label>Santri</label>
+              <select id="spp-santri" required>
+                <option value="">-- Pilih Santri --</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Bulan</label>
+                <select id="spp-bulan" required>
+                  <option value="Januari">Januari</option>
+                  <option value="Februari">Februari</option>
+                  <option value="Maret">Maret</option>
+                  <option value="April">April</option>
+                  <option value="Mei">Mei</option>
+                  <option value="Juni">Juni</option>
+                  <option value="Juli">Juli</option>
+                  <option value="Agustus">Agustus</option>
+                  <option value="September">September</option>
+                  <option value="Oktober">Oktober</option>
+                  <option value="November">November</option>
+                  <option value="Desember">Desember</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Tahun</label>
+                <input type="number" id="spp-tahun" value="2026" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Jumlah Bayar (Rp)</label>
+              <input type="number" id="spp-jumlah" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fa-solid fa-cash-register"></i> Simpan Pembayaran SPP
+            </button>
+          </form>
+        </div>
+
+        <!-- Riwayat Transaksi SPP -->
+        <div class="card-title" style="margin-top:20px;">
+          <i class="fa-solid fa-history"></i>
+          <h3>Riwayat Pembayaran SPP</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Santri</th>
+                <th>Bulan</th>
+                <th>Jumlah</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-spp">
+              <!-- Render via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- TAB 4: LAPORAN & EXPORT PDF -->
+      <section id="tab-laporan" class="tab-content">
+        <div class="card-title">
+          <i class="fa-solid fa-chart-pie"></i>
+          <h2>Laporan Perkembangan</h2>
+        </div>
+
+        <div class="form-card">
+          <div class="form-group">
+            <label><i class="fa-solid fa-user-graduate"></i> Pilih Santri untuk Laporan Detail</label>
+            <select id="laporan-santri" onchange="renderLaporanSantri()">
+              <option value="">-- Pilih Santri --</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="laporan-detail-container" style="display:none;">
+          <!-- Ringkasan Stat -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <i class="fa-solid fa-user-check text-green"></i>
+              <div>
+                <small>Presensi Hadir</small>
+                <h3 id="stat-hadir-pct">0%</h3>
+              </div>
+            </div>
+            <div class="stat-card">
+              <i class="fa-solid fa-book-open text-gold"></i>
+              <div>
+                <small>Total Setoran Hanca</small>
+                <h3 id="stat-hanca-count">0 Kali</h3>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action PDF Export -->
+          <button class="btn btn-gold btn-block" style="margin: 15px 0;" onclick="printOfficialReportPDF()">
+            <i class="fa-solid fa-file-pdf"></i> Cetak / Export PDF Resmi
+          </button>
+
+          <!-- Riwayat Setoran Hanca -->
+          <div class="card-title" style="margin-top: 15px;">
+            <i class="fa-solid fa-list-check"></i>
+            <h3>Riwayat Setoran Hanca</h3>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Kitab</th>
+                  <th>Pencapaian</th>
+                  <th>Catatan</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-laporan-hanca"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: MANAGEMENT MASTER (ADMIN ONLY) -->
+      <section id="tab-master" class="tab-content">
+        <div class="card-title">
+          <i class="fa-solid fa-sliders"></i>
+          <h2>Manajemen Master Data</h2>
+        </div>
+
+        <!-- Accordion/Sub-tabs -->
+        <div class="master-subtabs">
+          <button class="subtab-btn active" onclick="switchSubTab('master-lembaga')">🏢 Lembaga</button>
+          <button class="subtab-btn" onclick="switchSubTab('master-halaqah')">🏫 Halaqah</button>
+          <button class="subtab-btn" onclick="switchSubTab('master-santri')">👥 Santri</button>
+          <button class="subtab-btn" onclick="switchSubTab('master-kitab')">📖 Kitab</button>
+          <button class="subtab-btn" onclick="switchSubTab('master-users')">👤 Akun</button>
+        </div>
+
+        <!-- Master Lembaga -->
+        <div id="master-lembaga" class="subtab-content active">
+          <form id="form-master-lembaga" class="form-card">
+            <div class="form-group">
+              <label>Nama Lembaga</label>
+              <input type="text" id="cfg-nama-lembaga" required>
+            </div>
+            <div class="form-group">
+              <label>URL Logo Lembaga</label>
+              <input type="url" id="cfg-logo-lembaga" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Simpan Pengaturan Lembaga</button>
+          </form>
+        </div>
+
+        <!-- Master Halaqah -->
+        <div id="master-halaqah" class="subtab-content">
+          <form id="form-master-halaqah" class="form-card" style="margin-bottom:15px;">
+            <div class="form-group">
+              <label>Nama Halaqah</label>
+              <input type="text" id="hlq-nama" placeholder="Contoh: Halaqah Ula 1" required>
+            </div>
+            <div class="form-group">
+              <label>Ustadz/Ustadzah Pengampu</label>
+              <input type="text" id="hlq-ustadz" placeholder="Nama Ustadz">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Tambah Halaqah</button>
+          </form>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead><tr><th>Nama Halaqah</th><th>Ustadz</th><th>Aksi</th></tr></thead>
+              <tbody id="tbody-master-halaqah"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Master Santri -->
+        <div id="master-santri" class="subtab-content">
+          <form id="form-master-santri" class="form-card" style="margin-bottom:15px;">
+            <div class="form-group">
+              <label>Nama Santri</label>
+              <input type="text" id="str-nama" required>
+            </div>
+            <div class="form-group">
+              <label>Halaqah</label>
+              <select id="str-halaqah" required></select>
+            </div>
+            <div class="form-group">
+              <label>Nama Wali Santri</label>
+              <input type="text" id="str-wali">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Tambah Santri</button>
+          </form>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead><tr><th>Nama Santri</th><th>Halaqah</th><th>Wali</th><th>Aksi</th></tr></thead>
+              <tbody id="tbody-master-santri"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Master Kitab -->
+        <div id="master-kitab" class="subtab-content">
+          <form id="form-master-kitab" class="form-card" style="margin-bottom:15px;">
+            <div class="form-group">
+              <label>Nama Mata Pelajaran / Kitab</label>
+              <input type="text" id="ktb-nama" required placeholder="Contoh: Safinatun Najah">
+            </div>
+            <div class="form-group">
+              <label>Target Hanca</label>
+              <input type="text" id="ktb-target" required placeholder="Contoh: 50 Bab / 30 Surah">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Tambah Kitab</button>
+          </form>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead><tr><th>Nama Kitab</th><th>Target Hanca</th><th>Aksi</th></tr></thead>
+              <tbody id="tbody-master-kitab"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Master Users -->
+        <div id="master-users" class="subtab-content">
+          <form id="form-master-users" class="form-card" style="margin-bottom:15px;">
+            <div class="form-group">
+              <label>Username</label>
+              <input type="text" id="usr-username" required>
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="usr-password" required>
+            </div>
+            <div class="form-group">
+              <label>Role / Hak Akses</label>
+              <select id="usr-role" required onchange="toggleWaliSantriSelect()">
+                <option value="ustadz">Ustadz / Ustadzah</option>
+                <option value="admin">Admin / Pengurus</option>
+                <option value="wali">Wali Santri</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Nama Lengkap Pengguna</label>
+              <input type="text" id="usr-name" required>
+            </div>
+            <div class="form-group" id="group-usr-santri" style="display:none;">
+              <label>Pilih Santri (Untuk Wali Santri)</label>
+              <select id="usr-santri"></select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Tambah Akun</button>
+          </form>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead><tr><th>Username</th><th>Nama</th><th>Role</th><th>Aksi</th></tr></thead>
+              <tbody id="tbody-master-users"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- MOBILE BOTTOM NAVIGATION BAR -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" onclick="switchTab('tab-hanca', this)">
+        <i class="fa-solid fa-book-quran"></i>
+        <span>Hanca</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('tab-kehadiran', this)">
+        <i class="fa-solid fa-calendar-check"></i>
+        <span>Kehadiran</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('tab-spp', this)">
+        <i class="fa-solid fa-coins"></i>
+        <span>SPP</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('tab-laporan', this)">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Laporan</span>
+      </button>
+      <button class="nav-item admin-only" onclick="switchTab('tab-master', this)">
+        <i class="fa-solid fa-sliders"></i>
+        <span>Master</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- CONTAINER PRINT TEMPLATE PDF RESMI -->
+  <div id="print-area" class="print-area">
+    <div class="pdf-header">
+      <img id="pdf-logo" src="" alt="Logo">
+      <div class="pdf-header-text">
+        <h2 id="pdf-nama-lembaga">MADRASAH DINIYAH TAKMILIYAH</h2>
+        <p>Laporan Perkembangan Hanca, Kehadiran & Syahriyyah Santri</p>
+      </div>
+    </div>
+    <hr class="pdf-line">
+
+    <table class="pdf-meta-table">
+      <tr>
+        <td><b>Nama Santri:</b> <span id="pdf-santri-nama">-</span></td>
+        <td><b>Halaqah:</b> <span id="pdf-halaqah-nama">-</span></td>
+      </tr>
+      <tr>
+        <td><b>Nama Wali:</b> <span id="pdf-wali-nama">-</span></td>
+        <td><b>Tanggal Cetak:</b> <span id="pdf-date">-</span></td>
+      </tr>
+    </table>
+
+    <h4 class="pdf-section-title">1. Ringkasan Kehadiran Santri</h4>
+    <div id="pdf-kehadiran-summary" class="pdf-summary-box">
+      <!-- Generated via JS -->
+    </div>
+
+    <h4 class="pdf-section-title">2. Catatan Setoran Hanca Terakhir</h4>
+    <table class="pdf-table">
+      <thead>
+        <tr>
+          <th>Tanggal</th>
+          <th>Kitab</th>
+          <th>Pencapaian Hanca</th>
+          <th>Catatan Ustadz</th>
+        </tr>
+      </thead>
+      <tbody id="pdf-hanca-tbody"></tbody>
+    </table>
+
+    <h4 class="pdf-section-title">3. Status Pembayaran Syahriyyah / SPP</h4>
+    <table class="pdf-table">
+      <thead>
+        <tr>
+          <th>Bulan / Tahun</th>
+          <th>Tanggal Bayar</th>
+          <th>Jumlah</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="pdf-spp-tbody"></tbody>
+    </table>
+
+    <div class="pdf-footer-sign">
+      <div>
+        <p>Mengetahui,</p>
+        <p><b>Kepala Madrasah / Ustadz Pengampu</b></p>
+        <br><br><br>
+        <p>( _______________________ )</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
