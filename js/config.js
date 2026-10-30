@@ -4,5 +4,5 @@
    Jangan pernah menaruh token/kunci API apa pun di berkas ini.
    ===================================================================== */
 window.APP_CONFIG = {
-  GAS_URL: 'https://script.google.com/macros/s/GANTI_DENGAN_ID_DEPLOYMENT/exec'
+  GAS_URL: 'https://script.google.com/macros/s/AKfycbyl1n7DpsPqEGS4tmlne_wHDE3VoQRLWTEWO-KQ6T8rgFFRVlPEs16fYctDG_Um8ymOHA/exec'
 };
