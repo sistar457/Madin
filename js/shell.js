@@ -22,7 +22,7 @@ const NAV = [
   { r: '/pengguna', t: 'Pengguna', i: 'manage_accounts', roles: ['admin'] },
   { r: '/migrasi', t: 'Migrasi Data', i: 'sync_alt', roles: ['admin'] },
   { r: '/pengaturan', t: 'Pengaturan', i: 'tune', roles: ['admin'] },
-  { r: '/akun', t: 'Akun', i: 'person', roles: ['wali'] }
+  { r: '/akun', t: 'Akun Saya', i: 'person', roles: SEMUA }
 ];
 const urlAman = u => /^https:\/\/(drive|docs)\.google\.com\//.test(u) || /^https:\/\/(www\.)?(youtube\.com|youtu\.be|vimeo\.com)\//.test(u) ? u : /^https:\/\//.test(u) ? u : '';
 const STATUS_BADGE = { Lunas: 'ok', Menunggu: 'info', 'Belum Bayar': 'bad', Ditolak: 'warn' };
