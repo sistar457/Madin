@@ -16,6 +16,7 @@ const NAV = [
   { r: '/materi', t: 'Materi Belajar', i: 'auto_stories', roles: SEMUA },
   { r: '/laporan', t: 'Laporan', i: 'bar_chart', roles: STAF },
   { sec: 'Administrasi', roles: ['admin'] },
+  { r: '/halaman', t: 'Halaman Depan', i: 'web', roles: ['admin'] },
   { r: '/notifikasi', t: 'WhatsApp & Notifikasi', i: 'forum', roles: ['admin'] },
   { r: '/crm', t: 'CRM Kontak', i: 'contacts', roles: ['admin'] },
   { r: '/berita', t: 'Berita & Agenda', i: 'campaign', roles: ['admin'] },

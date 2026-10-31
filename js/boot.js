@@ -19,6 +19,7 @@
   halaman('/keuangan', 'Keuangan SPP', pageKeuangan, ['admin']);
   halaman('/materi', 'Materi Belajar', pageMateri, SEMUA);
   halaman('/laporan', 'Laporan', pageLaporan, STAF);
+  halaman('/halaman', 'Halaman Depan', pageHalaman, ['admin']);
   halaman('/notifikasi', 'WhatsApp & Notifikasi', pageNotifikasi, ['admin']);
   halaman('/crm', 'CRM Kontak', pageCRM, ['admin']);
   halaman('/berita', 'Berita & Agenda', pageBerita, ['admin']);
