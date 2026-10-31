@@ -14,7 +14,7 @@ function renderLanding() {
     <nav class="pub-nav" aria-label="Navigasi utama"><a href="#/">Beranda</a><a href="#/" data-go="program">Program</a><a href="#/" data-go="agenda">Agenda</a><a href="#/" data-go="kontak">Kontak</a></nav>
     <span class="grow"></span>${temaBtn()}<a class="btn primary" href="#/login">${ico('login', 'sm')} <span>Portal Login</span></a>
   </div></header>
-  <main class="wrap">
+  <main class="pgw">
     <section class="s"><div class="card hero">
       <div class="col gap-lg">
         <span class="pill" id="lp-akr">${ico('verified', 'sm')} Sistem Informasi Madrasah Diniyah</span>
@@ -23,7 +23,7 @@ function renderLanding() {
         <div class="row wrap"><a class="btn primary" id="lp-ppdb" href="#/login">${ico('login', 'sm')} Masuk Portal</a><a class="btn" href="#/" data-go="program">${ico('menu_book', 'sm')} Lihat Program</a></div>
         <div class="row wrap faint" style="font-size:13px;gap:18px"><span class="row">${ico('qr_code_scanner', 'sm')} Presensi QR</span><span class="row">${ico('auto_stories', 'sm')} Hafalan &amp; Hanca</span><span class="row">${ico('account_balance_wallet', 'sm')} SPP Digital</span></div>
       </div>
-      <div class="art" aria-hidden="true">${ico('mosque')}<span class="pill" style="position:absolute;left:16px;bottom:16px;background:rgba(0,0,0,.25);color:#fff;box-shadow:none" id="lp-jam">${ico('schedule', 'sm')} <span>Jam belajar</span></span></div>
+      <div class="art" id="lp-art"><span class="ms art-ico" aria-hidden="true">mosque</span><span class="pill art-pill" id="lp-jam">${ico('schedule', 'sm')} <span id="lp-jamt">Jam belajar</span></span></div>
     </div></section>
     <section class="s"><div class="grid g3" id="lp-stat">${[0, 1, 2].map(() => '<div class="card kpi"><div class="skel" style="height:44px"></div></div>').join('')}</div></section>
     <section class="s" id="program">
@@ -41,7 +41,7 @@ function renderLanding() {
     <section class="s" id="agenda"><div class="sec-title"><span class="pill">Informasi terkini</span><h2>Agenda &amp; Pengumuman</h2></div><div class="grid g3" id="lp-berita"><div class="card"><div class="skel" style="height:90px"></div></div></div></section>
     <section class="s"><div class="cta"><div class="col"><h2>Daftarkan putra-putri Anda</h2><p id="lp-cta-sub" style="opacity:.85">Hubungi sekretariat untuk informasi pendaftaran santri baru.</p></div><div class="row wrap" id="lp-cta-btn"></div></div></section>
   </main>
-  <footer class="foot" id="kontak"><div class="wrap">
+  <footer class="foot" id="kontak"><div class="pgw">
     <div class="col"><b style="font:700 16px var(--font-h)" id="lp-fnama"></b><p class="sub" id="lp-falamat"></p></div>
     <div><h4>Tautan</h4><a href="#/" data-go="program">Program</a><a href="#/" data-go="agenda">Agenda</a><a href="#/login">Portal Akademik Santri &amp; Wali</a></div>
     <div><h4>Kontak</h4><span class="sub" id="lp-fkontak" style="display:block"></span></div>
@@ -55,7 +55,15 @@ function renderLanding() {
     document.title = s.NAMA_MADRASAH + ' — SIMADANI';
     $('#lp-nama').textContent = s.NAMA_MADRASAH; $('#lp-slogan').textContent = s.SLOGAN; $('#lp-fnama').textContent = s.NAMA_MADRASAH;
     if (s.AKREDITASI) $('#lp-akr').innerHTML = `${ico('verified', 'sm')} ${esc(s.AKREDITASI)}${s.TA_AKTIF ? ' • T.A. ' + esc(s.TA_AKTIF) : ''}`;
-    if (s.JAM_BELAJAR) $('#lp-jam span').textContent = (s.HARI_BELAJAR ? s.HARI_BELAJAR + ' • ' : '') + s.JAM_BELAJAR;
+    if (s.JAM_BELAJAR) $('#lp-jamt').textContent = (s.HARI_BELAJAR ? s.HARI_BELAJAR + ' • ' : '') + s.JAM_BELAJAR;
+    const gambar = /^https:\/\/(drive\.google\.com|lh3\.googleusercontent\.com)\//.test(s.HERO_GAMBAR || '') ? s.HERO_GAMBAR : '';
+    const art = $('#lp-art'), im = $('img.art-img', art);
+    if (gambar && (!im || im.getAttribute('src') !== gambar)) {
+      if (im) im.remove();
+      const i = document.createElement('img'); i.className = 'art-img'; i.alt = 'Foto ' + s.NAMA_MADRASAH; i.referrerPolicy = 'no-referrer'; i.decoding = 'async';
+      i.onerror = () => { i.remove(); $('.art-ico', art).style.display = ''; }; i.onload = () => { $('.art-ico', art).style.display = 'none'; art.classList.add('has-img'); };
+      i.src = gambar; art.insertBefore(i, art.firstChild);
+    } else if (!gambar) { if (im) im.remove(); art.classList.remove('has-img'); $('.art-ico', art).style.display = ''; }
     $('#lp-falamat').textContent = s.ALAMAT;
     $('#lp-fkontak').innerHTML = [s.TELP && 'Telp/WA: ' + esc(s.TELP), s.EMAIL && esc(s.EMAIL), s.HARI_BELAJAR && 'Belajar: ' + esc(s.HARI_BELAJAR) + ' ' + esc(s.JAM_BELAJAR)].filter(Boolean).join('<br>') || '—';
     const st = d.statistik || {};
