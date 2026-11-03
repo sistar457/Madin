@@ -43,17 +43,18 @@ const Shell = {
     if (this.uid === Sesi.me.id && $('#view')) return;
     this.uid = Sesi.me.id;
     const it = this.items(), bot = it.filter(n => n.r).slice(0, 4);
-    $('#app').innerHTML = `<div class="app">
+    const app = appBaru();
+    app.innerHTML = `<div class="app">
       <aside class="side" id="side" aria-label="Menu utama"><div class="brand"><span class="logo">${ico('mosque')}</span><div><b>SIMADANI</b><small>Tarbiyatul Huda</small></div></div>
         <nav class="nav">${it.map(n => n.sec ? `<div class="sec">${n.sec}</div>` : `<a href="#${n.r}" data-r="${n.r}">${ico(n.i)}<span>${n.t}</span></a>`).join('')}</nav>
         <div class="me">${av(Sesi.me.nama)}<div class="grow"><b style="display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(Sesi.me.nama)}</b><small class="faint">${Sesi.role === 'admin' ? 'Admin TU' : Sesi.role === 'ustadz' ? 'Ustadz / Ustadzah' : 'Wali Santri'}</small></div><button class="btn icon sm" data-act="keluar" aria-label="Keluar">${ico('logout', 'sm')}</button></div></aside>
       <div class="scrim" data-act="tutup-menu"></div>
       <div class="main"><header class="topbar"><button class="btn icon menu-btn" data-act="menu" aria-label="Buka menu">${ico('menu')}</button><span class="title" id="ttl"></span><span class="grow"></span>
-        <span class="ta hide-m"><i class="dot"></i>T.A. ${esc(Meta().tahunAjaran || '')}</span><button class="btn icon" data-act="tema" aria-label="Ganti tema">${ico('contrast')}</button></header>
+        <span class="ta hide-m"><i class="dot"></i>T.A. ${esc(Meta().tahunAjaran || '')}</span><button class="btn icon" data-act="tema" aria-label="Ganti mode terang/gelap">${ico('contrast')}</button><button class="btn icon" data-act="skin" aria-label="Pilih tampilan">${ico('palette')}</button></header>
         <main class="view" id="view"></main></div>
       <nav class="bottom" aria-label="Navigasi bawah">${bot.map(n => `<a href="#${n.r}" data-r="${n.r}">${ico(n.i)}<span>${n.t.split(' ')[0]}</span></a>`).join('')}<a href="#${Router.path()}" data-act="menu" role="button">${ico('apps')}<span>Menu</span></a></nav></div>`;
-    const app = $('#app');
     on(app, 'click', '[data-act=tema]', () => Tema.toggle());
+    on(app, 'click', '[data-act=skin]', () => dialogTampilan());
     on(app, 'click', '[data-act=menu]', e => { e.preventDefault(); document.body.classList.toggle('drawer'); });
     on(app, 'click', '[data-act=tutup-menu]', () => document.body.classList.remove('drawer'));
     on(app, 'click', '.nav a', () => document.body.classList.remove('drawer'));
@@ -106,7 +107,8 @@ function pageDashboard(v) {
     if (aksi === 'tolak') { catatan = await mintaAlasan(); if (catatan == null) return; }
     await tombolSibuk(b, async () => { const r = await api('keuangan.validasi', { id, aksi, catatan }); toast(r.message, r.success ? '' : 'error'); if (r.success) { Api.epoch++; Router.render(); } });
   });
-  return () => { mati = true; if (chart) chart.destroy(); };
+  const onSkin = () => draw(); window.addEventListener('skinchange', onSkin);
+  return () => { mati = true; window.removeEventListener('skinchange', onSkin); if (chart) chart.destroy(); };
 }
 function mintaAlasan() {
   return new Promise(res => { let ok = false; modal({ title: 'Tolak bukti transfer', body: '<label class="f">Alasan penolakan<span class="hint">Wali akan menerima alasan ini agar dapat mengunggah ulang.</span><textarea class="in" id="alasan" maxlength="150" placeholder="mis. Foto buram / nominal tidak sesuai"></textarea></label>', onClose: () => { if (!ok) res(null); },
@@ -219,9 +221,9 @@ function dialogUnggahBukti(k, selesai) {
 function pageAkun(v) {
   const me = Sesi.me;
   v.innerHTML = judul(Sesi.role === 'wali' ? 'Portal Wali' : 'Pengaturan', 'Akun Saya') + `<div class="grid g2"><div class="card"><div class="row">${av(me.nama, 'lg')}<div><h3>${esc(me.nama)}</h3><p class="sub">${esc(me.username)} · ${Sesi.role === 'wali' ? 'Wali santri' : Sesi.role === 'ustadz' ? 'Ustadz' : 'Admin'}</p></div></div>
-    <div class="sep"></div><div class="col"><button class="btn block" data-act="tema">${ico('contrast', 'sm')} Ganti tema terang / gelap</button><button class="btn block" id="outall">${ico('devices', 'sm')} Keluar dari semua perangkat</button><button class="btn block danger" id="out">${ico('logout', 'sm')} Keluar</button></div></div>
+    <div class="sep"></div><div class="col"><button class="btn block" data-act="tema">${ico('contrast', 'sm')} Ganti mode terang / gelap</button><button class="btn block" data-act="skin">${ico('palette', 'sm')} Pilih tampilan…</button><button class="btn block" id="outall">${ico('devices', 'sm')} Keluar dari semua perangkat</button><button class="btn block danger" id="out">${ico('logout', 'sm')} Keluar</button></div></div>
     <form class="card" id="pf"><h3>Ubah kata sandi</h3><div class="col mt"><label class="f">Sandi saat ini<input class="in" type="password" id="s0" autocomplete="current-password" required></label><label class="f">Sandi baru<span class="hint">Minimal 8 karakter, kombinasi huruf dan angka.</span><input class="in" type="password" id="s1" autocomplete="new-password" required minlength="8"></label><label class="f">Ulangi sandi baru<input class="in" type="password" id="s2" autocomplete="new-password" required></label><button class="btn primary" type="submit">Simpan sandi</button></div></form></div>`;
-  on(v, 'click', '[data-act=tema]', () => Tema.toggle());
+  // tombol mode/tampilan sudah ditangani di kerangka aplikasi (Shell.build); jangan dipasang dua kali
   $('#out').onclick = async () => { if (await konfirmasi('Keluar dari SIMADANI?', 'Keluar')) { Sesi.clear(); Shell.uid = null; Router.go('/'); } };
   $('#outall').onclick = async () => { if (await konfirmasi('Semua perangkat (termasuk ini) akan dikeluarkan.', 'Keluarkan semua')) { await api('auth.keluarSemua'); Sesi.clear(); Shell.uid = null; Router.go('/login'); } };
   $('#pf').onsubmit = async e => { e.preventDefault(); if ($('#s1').value !== $('#s2').value) return toast('Konfirmasi sandi tidak sama.', 'error');

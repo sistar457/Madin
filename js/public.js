@@ -3,8 +3,8 @@
    ===================================================================== */
 'use strict';
 const PUB_DEF = { NAMA_MADRASAH: 'Madrasah Diniyah Tarbiyatul Huda', SLOGAN: "Membina generasi Qur'ani, berakhlak karimah, dan unggul dalam kajian diniyah.", TA_AKTIF: '', ALAMAT: '', TELP: '', EMAIL: '', JAM_BELAJAR: '', HARI_BELAJAR: '', AKREDITASI: '', WA_PPDB: '', KELAS_DAFTAR: '' };
-const temaBtn = () => `<button class="btn icon" data-act="tema" aria-label="Ganti tema terang/gelap">${ico('contrast')}</button>`;
-function bindTema(root) { on(root, 'click', '[data-act=tema]', () => Tema.toggle()); }
+const temaBtn = () => `<button class="btn icon" data-act="tema" aria-label="Ganti mode terang/gelap">${ico('contrast')}</button><button class="btn icon" data-act="skin" aria-label="Pilih tampilan">${ico('palette')}</button>`;
+function bindTema(root) { on(root, 'click', '[data-act=tema]', () => Tema.toggle()); on(root, 'click', '[data-act=skin]', () => dialogTampilan()); }
 
 /* ---------- Penyaji blok halaman depan (dipakai halaman publik DAN pratinjau editor) ---------- */
 const waLink = s => { const wa = String((s || {}).WA_PPDB || '').replace(/\D/g, '').replace(/^0/, '62'); return wa ? 'https://wa.me/' + wa + '?text=' + encodeURIComponent("Assalamu'alaikum, saya ingin bertanya tentang pendaftaran santri baru.") : ''; };
@@ -59,7 +59,7 @@ function htmlBlok(b, c) {
 const htmlLanding = (blok, c) => blok.filter(b => b.tampil).map(b => htmlBlok(b, c)).join('');
 
 function renderLanding() {
-  const app = $('#app'); document.body.classList.remove('drawer');
+  const app = appBaru(); document.body.classList.remove('drawer');
   app.innerHTML = `
   <header class="pub-top"><div class="in-w">
     <a href="#/" class="row pub-brand"><span class="logo">${ico('mosque')}</span><b id="lp-nama">Tarbiyatul Huda</b></a>
@@ -80,6 +80,7 @@ function renderLanding() {
   swr('publik.landing', null, (d, dariCache, r) => {
     if (!d) { $('#lp-main').innerHTML = `<section class="s"><div class="card"><div class="notice bad">${ico('cloud_off')}<span>${esc(r ? r.message : 'Gagal memuat halaman.')}</span></div></div></section>`; return; }
     const s = Object.assign({}, PUB_DEF, d.setting);
+    Tema.setSitus(s.SKIN_DEFAULT);
     document.title = s.NAMA_MADRASAH + ' — SIMADANI';
     const md = document.querySelector('meta[name=description]'); if (md && s.SLOGAN) md.content = s.SLOGAN;
     $('#lp-nama').textContent = s.NAMA_MADRASAH; $('#lp-fnama').textContent = s.NAMA_MADRASAH; $('#lp-falamat').textContent = s.ALAMAT;
@@ -92,7 +93,7 @@ function renderLanding() {
 }
 
 function renderLogin() {
-  const app = $('#app');
+  const app = appBaru();
   const roles = [{ k: 'wali', t: 'Santri • Wali', l: 'Nomor Induk Santri (NIS)', ph: 'mis. 2026001', h: 'Gunakan NIS santri yang tertera pada kartu.', i: 'badge' },
     { k: 'ustadz', t: 'Ustadz • Guru', l: 'Nama pengguna asatidz', ph: 'nama pengguna', h: 'Diberikan oleh Admin TU.', i: 'person' },
     { k: 'admin', t: 'Admin TU', l: 'Nama pengguna admin', ph: 'nama pengguna', h: 'Akun pengelola madrasah.', i: 'admin_panel_settings' }];
@@ -129,13 +130,13 @@ function renderLogin() {
 }
 async function masukSesi(d, ingat) {
   Sesi.token = d.token; Sesi.me = d.me; Sesi.save(ingat);
-  const m = await api('auth.me'); if (m.success) { Sesi.meta = m.data; Sesi.me = m.data.me; Sesi.save(ingat); }
+  const m = await api('auth.me'); if (m.success) { Sesi.meta = m.data; Sesi.me = m.data.me; Sesi.save(ingat); Tema.setSitus(m.data.skin); }
   Router.go(Shell.beranda());
 }
 
 /* Akses darurat — rute tersembunyi (#/darurat), tidak ditautkan dari antarmuka mana pun (R9) */
 function renderDarurat() {
-  const app = $('#app');
+  const app = appBaru();
   app.innerHTML = `<div class="login-bg"><main class="grow" style="padding:24px 16px"><form class="card login-card" id="f">
     <div class="center"><div class="login-emblem" style="color:var(--danger)">${ico('emergency', 'lg')}</div><h2>Akses Darurat</h2><p class="sub mt-s">Hanya untuk pemulihan bila akun admin terkunci. Setiap pemakaian dicatat.</p></div>
     <label class="f mt">Nama pengguna<input class="in" id="du" autocomplete="off" autocapitalize="none" required></label>

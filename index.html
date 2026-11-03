@@ -12,9 +12,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=1.0.0">
+<link rel="stylesheet" href="css/themes.css?v=1.0.0">
 <script>
-/* Terapkan tema sebelum render pertama (hindari kilat terang→gelap) */
-(function () { try { var t = localStorage.getItem('mdt.tema') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();
+/* Terapkan mode (terang/gelap) dan tampilan (skin) sebelum render pertama — hindari kedipan */
+(function () { try { var h = document.documentElement, ok = /^[a-z0-9-]{2,20}$/;
+  var t = localStorage.getItem('mdt.tema') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); h.setAttribute('data-theme', t);
+  var s = localStorage.getItem('mdt.skin') || localStorage.getItem('mdt.skinDef') || 'klasik'; h.setAttribute('data-skin', ok.test(s) ? s : 'klasik'); } catch (e) {} })();
 </script>
 </head>
 <body>
@@ -23,6 +26,7 @@
 <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
 <noscript>Aplikasi ini memerlukan JavaScript.</noscript>
 <script src="js/config.js?v=1.0.0"></script>
+<script src="js/skins.js?v=1.0.0"></script>
 <script src="js/core.js?v=1.0.0"></script>
 <script src="js/public.js?v=1.0.0"></script>
 <script src="js/shell.js?v=1.0.0"></script>

@@ -1,0 +1,150 @@
+/* =====================================================================
+   themes.css — TAMPILAN (skin) tambahan untuk SIMADANI
+   ---------------------------------------------------------------------
+   Skin hanya mengganti VARIABEL (token) dari css/style.css — tidak ada fungsi yang berubah.
+   Skin "klasik" adalah bawaan (token di :root pada style.css), jadi tidak ada blok di sini.
+
+   CARA MENAMBAH TAMPILAN BARU
+   1. Salin salah satu blok skin di bawah (terang + gelap), ganti nama "samudra" dengan id baru
+      (huruf kecil/angka/strip), lalu ubah nilai warnanya.
+   2. Daftarkan satu baris di js/skins.js (id, nama, keterangan, 3 warna contoh).
+   Selesai — pilihan tampilan otomatis muncul di dialog "Tampilan".
+
+   ATURAN
+   - Blok TERANG memakai :not([data-theme="dark"]); blok GELAP memakai [data-theme="dark"].
+     Setiap skin sebaiknya mendefinisikan SEMUA token di kedua blok agar tidak ada warna "bocor".
+   - Jaga kontras teks ≥ 4,5 : 1 (--ink atas --page/--canvas, --btn-fg atas --btn-bg, --cta-fg atas --cta-bg).
+   - Token bentuk (--r-ctl/--r-card/--r-modal) boleh diubah pada blok umum :root[data-skin="x"].
+   ===================================================================== */
+
+/* ===================== SAMUDRA — biru laut, efek timbul lembut ===================== */
+:root[data-skin="samudra"]:not([data-theme="dark"]) {
+  --page: #f2f7fa; --canvas: #e4ecf2; --inset: #d8e3eb;
+  --ink: #0f1c26; --ink-2: #364955; --ink-3: #5f7280; --line: #b4c5d1;
+  --primary: #0b4f6c; --primary-dark: #06344a; --on-primary: #ffffff; --primary-soft: #bfe3f2;
+  --secondary: #1d4ed8; --amber: #c2610f; --amber-soft: #ffe2c6; --danger: #b3261e; --danger-soft: #ffdad6; --ok-soft: #c6ecde; --info-soft: #dbe4ff;
+  --sh-dark: rgba(140, 164, 184, .65); --sh-light: rgba(255, 255, 255, .95);
+  --raised-1: 4px 4px 10px rgba(140, 164, 184, .62), -4px -4px 10px rgba(255, 255, 255, .95);
+  --raised-2: 8px 8px 20px rgba(140, 164, 184, .58), -8px -8px 20px rgba(255, 255, 255, .92);
+  --raised-3: 14px 14px 28px rgba(140, 164, 184, .68), -14px -14px 28px rgba(255, 255, 255, .95);
+  --sunken: inset 3px 3px 6px rgba(140, 164, 184, .7), inset -3px -3px 6px rgba(255, 255, 255, .85);
+  --raised-h: 6px 6px 14px rgba(140, 164, 184, .65), -6px -6px 14px rgba(255, 255, 255, .95);
+  --side-shadow: 6px 0 20px rgba(140, 164, 184, .35); --foot-shadow: 0 -6px 20px rgba(140, 164, 184, .25);
+  --btn-bg: #0b4f6c; --btn-fg: #ffffff; --hero-a: #0b4f6c; --hero-b: #1d7fa3;
+  --cta-bg: #0b4f6c; --cta-fg: #e8f6fc; --cta-btn-fg: #0b4f6c;
+  --card-a: #ffffff; --card-b: #e4ecf2; --card-ink: #0f1c26; --card-edge: #0b4f6c;
+}
+:root[data-skin="samudra"][data-theme="dark"] {
+  --page: #14191e; --canvas: #1a2128; --inset: #12171c;
+  --ink: #e6eef3; --ink-2: #b9c7d1; --ink-3: #8497a4; --line: #34424d;
+  --primary: #7cc4e4; --primary-dark: #a6d9ef; --on-primary: #06222f; --primary-soft: #14516b;
+  --secondary: #8fb0ff; --amber: #f59e0b; --amber-soft: #4a2c0a; --danger: #ffb4ab; --danger-soft: #5c1a16; --ok-soft: #164b44; --info-soft: #1d2f66;
+  --raised-1: 4px 4px 8px rgba(5, 8, 11, .8), -3px -3px 8px rgba(44, 56, 68, .55);
+  --raised-2: 8px 8px 18px rgba(5, 8, 11, .9), -6px -6px 18px rgba(44, 56, 68, .5);
+  --raised-3: 12px 12px 24px rgba(3, 5, 8, .95), -8px -8px 24px rgba(44, 56, 68, .6);
+  --sunken: inset 3px 3px 6px rgba(3, 5, 8, .9), inset -3px -3px 6px rgba(44, 56, 68, .45);
+  --raised-h: 6px 6px 12px rgba(5, 8, 11, .85), -5px -5px 12px rgba(44, 56, 68, .6);
+  --side-shadow: 6px 0 20px rgba(0, 0, 0, .4); --foot-shadow: 0 -6px 20px rgba(0, 0, 0, .35);
+  --btn-bg: #1b6f94; --btn-fg: #f2fbff; --hero-a: #1b6f94; --hero-b: #0b4f6c;
+  --cta-bg: #0e4660; --cta-fg: #e8f6fc; --cta-btn-fg: #0b4f6c;
+  --card-a: #222b33; --card-b: #1a2128; --card-ink: #e6eef3; --card-edge: #7cc4e4;
+}
+
+/* ===================== SENJA — marun hangat & krem ===================== */
+:root[data-skin="senja"]:not([data-theme="dark"]) {
+  --page: #fbf3ef; --canvas: #f1e4dd; --inset: #e8d6cd;
+  --ink: #2a1614; --ink-2: #553733; --ink-3: #85625c; --line: #cfb3aa;
+  --primary: #7a1f2b; --primary-dark: #55121c; --on-primary: #ffffff; --primary-soft: #f4c9cf;
+  --secondary: #1d4ed8; --amber: #b45309; --amber-soft: #ffe0b8; --danger: #b3261e; --danger-soft: #ffdad6; --ok-soft: #cfe9d4; --info-soft: #dbe4ff;
+  --sh-dark: rgba(190, 160, 148, .65); --sh-light: rgba(255, 255, 255, .95);
+  --raised-1: 4px 4px 10px rgba(190, 160, 148, .62), -4px -4px 10px rgba(255, 255, 255, .95);
+  --raised-2: 8px 8px 20px rgba(190, 160, 148, .58), -8px -8px 20px rgba(255, 255, 255, .92);
+  --raised-3: 14px 14px 28px rgba(190, 160, 148, .68), -14px -14px 28px rgba(255, 255, 255, .95);
+  --sunken: inset 3px 3px 6px rgba(190, 160, 148, .7), inset -3px -3px 6px rgba(255, 255, 255, .85);
+  --raised-h: 6px 6px 14px rgba(190, 160, 148, .65), -6px -6px 14px rgba(255, 255, 255, .95);
+  --side-shadow: 6px 0 20px rgba(190, 160, 148, .35); --foot-shadow: 0 -6px 20px rgba(190, 160, 148, .25);
+  --btn-bg: #7a1f2b; --btn-fg: #ffffff; --hero-a: #7a1f2b; --hero-b: #a33a48;
+  --cta-bg: #7a1f2b; --cta-fg: #fdeceb; --cta-btn-fg: #7a1f2b;
+  --card-a: #ffffff; --card-b: #f1e4dd; --card-ink: #2a1614; --card-edge: #7a1f2b;
+}
+:root[data-skin="senja"][data-theme="dark"] {
+  --page: #1a1416; --canvas: #231a1d; --inset: #181114;
+  --ink: #f2e6e2; --ink-2: #cdb8b3; --ink-3: #9a8580; --line: #43343a;
+  --primary: #eaa3ac; --primary-dark: #f6c6cc; --on-primary: #3a0b13; --primary-soft: #5a1b27;
+  --secondary: #8fb0ff; --amber: #f59e0b; --amber-soft: #4a2c0a; --danger: #ffb4ab; --danger-soft: #5c1a16; --ok-soft: #1f4a35; --info-soft: #1d2f66;
+  --raised-1: 4px 4px 8px rgba(10, 6, 7, .82), -3px -3px 8px rgba(62, 46, 52, .55);
+  --raised-2: 8px 8px 18px rgba(10, 6, 7, .9), -6px -6px 18px rgba(62, 46, 52, .5);
+  --raised-3: 12px 12px 24px rgba(6, 3, 4, .95), -8px -8px 24px rgba(62, 46, 52, .6);
+  --sunken: inset 3px 3px 6px rgba(6, 3, 4, .9), inset -3px -3px 6px rgba(62, 46, 52, .45);
+  --raised-h: 6px 6px 12px rgba(10, 6, 7, .85), -5px -5px 12px rgba(62, 46, 52, .6);
+  --side-shadow: 6px 0 20px rgba(0, 0, 0, .4); --foot-shadow: 0 -6px 20px rgba(0, 0, 0, .35);
+  --btn-bg: #8e2a38; --btn-fg: #fff1f2; --hero-a: #8e2a38; --hero-b: #5d1620;
+  --cta-bg: #5d1620; --cta-fg: #fdeceb; --cta-btn-fg: #7a1f2b;
+  --card-a: #2c2024; --card-b: #231a1d; --card-ink: #f2e6e2; --card-edge: #eaa3ac;
+}
+
+/* ===================== FLAT — bersih, tanpa efek timbul, sudut lebih tegas ===================== */
+:root[data-skin="flat"] { --r-ctl: .5rem; --r-card: .75rem; --r-modal: 1rem; }
+:root[data-skin="flat"]:not([data-theme="dark"]) {
+  --page: #f5f6f8; --canvas: #ffffff; --inset: #f0f2f5;
+  --ink: #14181c; --ink-2: #3f4850; --ink-3: #66707a; --line: #d5d9de;
+  --primary: #0f4c3a; --primary-dark: #003426; --on-primary: #ffffff; --primary-soft: #cdeee0;
+  --secondary: #1d4ed8; --amber: #b45309; --amber-soft: #ffe7c7; --danger: #b3261e; --danger-soft: #ffe1de; --ok-soft: #d4f1e3; --info-soft: #e0e8ff;
+  --sh-dark: rgba(16, 24, 40, .12); --sh-light: rgba(255, 255, 255, 0);
+  --raised-1: 0 1px 2px rgba(16, 24, 40, .06), 0 0 0 1px #e1e4e8;
+  --raised-2: 0 1px 3px rgba(16, 24, 40, .08), 0 0 0 1px #e1e4e8;
+  --raised-3: 0 12px 32px rgba(16, 24, 40, .18), 0 0 0 1px #d5d9de;
+  --sunken: inset 0 0 0 1px #d5d9de;
+  --raised-h: 0 2px 8px rgba(16, 24, 40, .12), 0 0 0 1px #d0d5db;
+  --side-shadow: 1px 0 0 #e1e4e8; --foot-shadow: 0 -1px 0 #e1e4e8;
+  --btn-bg: #0f4c3a; --btn-fg: #ffffff; --hero-a: #0f4c3a; --hero-b: #2a7a5f;
+  --cta-bg: #0f4c3a; --cta-fg: #eafff6; --cta-btn-fg: #0f4c3a;
+  --card-a: #ffffff; --card-b: #f5f6f8; --card-ink: #14181c; --card-edge: #0f4c3a;
+}
+:root[data-skin="flat"][data-theme="dark"] {
+  --page: #0f1113; --canvas: #171a1d; --inset: #101214;
+  --ink: #eceff2; --ink-2: #bcc3ca; --ink-3: #8a939c; --line: #2d3338;
+  --primary: #82bba4; --primary-dark: #99d3ba; --on-primary: #00231a; --primary-soft: #15503e;
+  --secondary: #8fb0ff; --amber: #f59e0b; --amber-soft: #4a2c0a; --danger: #ffb4ab; --danger-soft: #5c1a16; --ok-soft: #15503e; --info-soft: #1d2f66;
+  --sh-dark: rgba(0, 0, 0, .5); --sh-light: rgba(255, 255, 255, 0);
+  --raised-1: 0 1px 2px rgba(0, 0, 0, .4), 0 0 0 1px #2a2f34;
+  --raised-2: 0 1px 3px rgba(0, 0, 0, .45), 0 0 0 1px #2a2f34;
+  --raised-3: 0 12px 32px rgba(0, 0, 0, .6), 0 0 0 1px #343a40;
+  --sunken: inset 0 0 0 1px #2d3338;
+  --raised-h: 0 2px 8px rgba(0, 0, 0, .5), 0 0 0 1px #3a4147;
+  --side-shadow: 1px 0 0 #2a2f34; --foot-shadow: 0 -1px 0 #2a2f34;
+  --btn-bg: #1f6b52; --btn-fg: #eafff6; --hero-a: #1f6b52; --hero-b: #0f4c3a;
+  --cta-bg: #15503e; --cta-fg: #eafff6; --cta-btn-fg: #0f4c3a;
+  --card-a: #1d2125; --card-b: #171a1d; --card-ink: #eceff2; --card-edge: #82bba4;
+}
+
+/* ===================== KONTRAS — garis tegas, keterbacaan maksimal ===================== */
+:root[data-skin="kontras"] { --r-ctl: .5rem; --r-card: .75rem; --r-modal: 1rem; }
+:root[data-skin="kontras"]:not([data-theme="dark"]) {
+  --page: #ffffff; --canvas: #ffffff; --inset: #eeeeee;
+  --ink: #000000; --ink-2: #1a1a1a; --ink-3: #3d3d3d; --line: #000000;
+  --primary: #004d2c; --primary-dark: #002a18; --on-primary: #ffffff; --primary-soft: #b8f0d0;
+  --secondary: #0033cc; --amber: #8a4500; --amber-soft: #ffe0b0; --danger: #a00000; --danger-soft: #ffd0d0; --ok-soft: #b8f0d0; --info-soft: #cdd9ff;
+  --sh-dark: #000000; --sh-light: #ffffff;
+  --raised-1: 0 0 0 2px #000000; --raised-2: 0 0 0 2px #000000;
+  --raised-3: 0 0 0 3px #000000, 0 12px 32px rgba(0, 0, 0, .45);
+  --sunken: inset 0 0 0 2px #000000; --raised-h: 0 0 0 3px #000000;
+  --side-shadow: 2px 0 0 #000000; --foot-shadow: 0 -2px 0 #000000;
+  --btn-bg: #004d2c; --btn-fg: #ffffff; --hero-a: #004d2c; --hero-b: #00381f;
+  --cta-bg: #004d2c; --cta-fg: #ffffff; --cta-btn-fg: #004d2c;
+  --card-a: #ffffff; --card-b: #ffffff; --card-ink: #000000; --card-edge: #000000;
+}
+:root[data-skin="kontras"][data-theme="dark"] {
+  --page: #000000; --canvas: #0a0a0a; --inset: #1a1a1a;
+  --ink: #ffffff; --ink-2: #f0f0f0; --ink-3: #cfcfcf; --line: #ffffff;
+  --primary: #7cf2b3; --primary-dark: #b4ffd6; --on-primary: #000000; --primary-soft: #0b5a36;
+  --secondary: #9db8ff; --amber: #ffb347; --amber-soft: #4a2c0a; --danger: #ff8a80; --danger-soft: #5c0f0a; --ok-soft: #0b5a36; --info-soft: #1d2f66;
+  --sh-dark: #000000; --sh-light: #ffffff;
+  --raised-1: 0 0 0 2px #ffffff; --raised-2: 0 0 0 2px #ffffff;
+  --raised-3: 0 0 0 3px #ffffff, 0 12px 32px rgba(0, 0, 0, .8);
+  --sunken: inset 0 0 0 2px #ffffff; --raised-h: 0 0 0 3px #ffffff;
+  --side-shadow: 2px 0 0 #ffffff; --foot-shadow: 0 -2px 0 #ffffff;
+  --btn-bg: #7cf2b3; --btn-fg: #000000; --hero-a: #0b5a36; --hero-b: #003d22;
+  --cta-bg: #0b5a36; --cta-fg: #ffffff; --cta-btn-fg: #003d22;
+  --card-a: #0a0a0a; --card-b: #0a0a0a; --card-ink: #ffffff; --card-edge: #ffffff;
+}

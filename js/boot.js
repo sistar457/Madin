@@ -2,7 +2,7 @@
 'use strict';
 (function () {
   async function pastikanMeta() {
-    if (Sesi.token && !Sesi.meta) { const m = await api('auth.me'); if (m.success) { Sesi.meta = m.data; Sesi.me = m.data.me; } }
+    if (Sesi.token && !Sesi.meta) { const m = await api('auth.me'); if (m.success) { Sesi.meta = m.data; Sesi.me = m.data.me; Tema.setSitus(m.data.skin); } }
   }
   function halaman(path, judulHal, fn, roles) {
     Router.add(path, { roles: roles, render: async () => { await pastikanMeta(); if (!Sesi.token) return; const v = Shell.mount(judulHal); return fn(v); } });

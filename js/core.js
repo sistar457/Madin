@@ -37,11 +37,40 @@ function loadScript(url) {
 }
 async function qrSvg(text, cell) { await loadScript(CDN.qrgen); const q = qrcode(0, 'M'); q.addData(text); q.make(); return q.createSvgTag({ cellSize: cell || 4, margin: 0, scalable: true }); }
 
-/* ---------- Tema ---------- */
+/* ---------- Tema: MODE (terang/gelap) + TAMPILAN/skin (css/themes.css, daftar di js/skins.js) ---------- */
 const Tema = {
   get() { return document.documentElement.getAttribute('data-theme') || 'light'; },
-  toggle() { const t = this.get() === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); try { localStorage.setItem('mdt.tema', t); } catch (e) {} const m = document.querySelector('meta[name=theme-color]'); if (m) m.content = t === 'dark' ? '#1e2022' : '#0f4c3a'; return t; }
+  setMode(m) { document.documentElement.setAttribute('data-theme', m); try { localStorage.setItem('mdt.tema', m); } catch (e) {} this._meta(); window.dispatchEvent(new Event('skinchange')); return m; },
+  toggle() { return this.setMode(this.get() === 'dark' ? 'light' : 'dark'); },
+  skinAktif() { return document.documentElement.getAttribute('data-skin') || window.SKIN_BAWAAN || 'klasik'; },
+  _valid(id) { return (window.SKINS || []).some(s => s.id === id); },
+  _simpan(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } },
+  skinPribadi() { return this._valid(this._simpan('mdt.skin')) ? this._simpan('mdt.skin') : ''; },
+  skinSitus() { return this._valid(this._simpan('mdt.skinDef')) ? this._simpan('mdt.skinDef') : (window.SKIN_BAWAAN || 'klasik'); },
+  terapkan(id) { if (!this._valid(id)) id = window.SKIN_BAWAAN || 'klasik'; document.documentElement.setAttribute('data-skin', id); this._meta(); window.dispatchEvent(new Event('skinchange')); },
+  /* pilihan pribadi di perangkat ini; id kosong = ikuti tampilan bawaan madrasah */
+  pilih(id) { try { id ? localStorage.setItem('mdt.skin', id) : localStorage.removeItem('mdt.skin'); } catch (e) {} this.terapkan(id || this.skinSitus()); },
+  /* tampilan bawaan yang ditetapkan admin; dipakai bila pengguna belum memilih sendiri */
+  setSitus(id) { if (!this._valid(id)) id = window.SKIN_BAWAAN || 'klasik'; try { localStorage.setItem('mdt.skinDef', id); } catch (e) {} if (!this.skinPribadi() && this.skinAktif() !== id) this.terapkan(id); },
+  _meta() { const m = document.querySelector('meta[name=theme-color]'); if (!m) return; const cs = getComputedStyle(document.documentElement); m.content = (cs.getPropertyValue(this.get() === 'dark' ? '--canvas' : '--primary') || '#0f4c3a').trim(); }
 };
+function dialogTampilan() {
+  const skins = window.SKINS || [], draw = () => {
+    const aktif = Tema.skinAktif(), pribadi = Tema.skinPribadi(), situs = skins.find(s => s.id === Tema.skinSitus()) || skins[0];
+    return `<div class="sub" style="font-weight:600;margin-bottom:6px">Mode</div><div class="seg fill" id="tm-mode"><button type="button" data-m="light" class="${Tema.get() === 'light' ? 'on' : ''}">Terang</button><button type="button" data-m="dark" class="${Tema.get() === 'dark' ? 'on' : ''}">Gelap</button></div>
+    <div class="sub mt" style="font-weight:600;margin-bottom:6px">Tampilan</div><div class="pick" id="tm-skin">${skins.map(s => `<button type="button" data-skin="${esc(s.id)}" aria-pressed="${s.id === aktif}" style="${s.id === aktif ? 'box-shadow:var(--sunken);outline:2px solid var(--primary)' : ''}"><span class="row" style="gap:0;flex:none">${s.warna.map((w, i) => `<i style="width:22px;height:22px;border-radius:50%;background:${esc(w)};border:2px solid var(--canvas);margin-left:${i ? '-8px' : '0'};display:inline-block;box-shadow:0 0 0 1px rgba(0,0,0,.15)"></i>`).join('')}</span><span><b>${esc(s.nama)}${s.id === aktif ? ' ✓' : ''}</b><small>${esc(s.ket)}</small></span></button>`).join('')}</div>
+    <p class="faint mt-s" style="font-size:12px">${pribadi ? `Pilihan ini hanya berlaku di perangkat Anda. <button type="button" class="btn sm" id="tm-reset">Ikuti tampilan bawaan madrasah (${esc(situs.nama)})</button>` : `Saat ini mengikuti tampilan bawaan madrasah (<b>${esc(situs.nama)}</b>). Memilih tampilan lain hanya berlaku di perangkat Anda.`}</p>`;
+  };
+  modal({ title: 'Tampilan', wide: true, noFocus: true, body: '<div id="tm"></div>', actions: [{ label: 'Selesai', cls: 'primary' }],
+    onOpen: bg => { const box = $('#tm', bg), tampil = () => { box.innerHTML = draw(); };
+      tampil();
+      on(box, 'click', '[data-m]', (e, b) => { Tema.setMode(b.dataset.m); tampil(); });
+      on(box, 'click', '[data-skin]', (e, b) => { Tema.pilih(b.dataset.skin); tampil(); });
+      on(box, 'click', '#tm-reset', () => { Tema.pilih(''); tampil(); }); } });
+}
+
+/* Elemen #app baru untuk setiap render halaman penuh: pendengar klik dari render sebelumnya tidak terbawa (mencegah handler ganda) */
+function appBaru() { const lama = $('#app'), baru = lama.cloneNode(false); lama.replaceWith(baru); return baru; }
 
 /* ---------- Toast & progres ---------- */
 function toast(msg, tipe) {
