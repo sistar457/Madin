@@ -167,7 +167,7 @@ function pagePresensi(v) {
 /* ---------- Hafalan & Hanca ---------- */
 function pageHafalan(v) {
   let tanggal = hariIni(), kelas = (Sesi.me.kelas && Meta().kelas.indexOf(Sesi.me.kelas) > -1) ? Sesi.me.kelas : (Meta().kelas[0] || ''), data = null, isi = {}, mati = false;
-  v.innerHTML = judul('Akademik', 'Buku Kendali Setoran & Hanca', '') + '<div id="hv"></div>';
+  v.innerHTML = judul('Akademik', 'Buku Kendali Setoran & Hanca', `<button class="btn" id="kj">${ico('tune', 'sm')} Kelola jenis setoran</button>`) + '<div id="hv"></div>';
   const J = () => Meta().jenisSetoran, K = () => Meta().kualitas;
   const draw = () => {
     if (mati || !data) return; const rg = data.ringkas;
@@ -192,6 +192,24 @@ function pageHafalan(v) {
     const nIsi = Object.keys(isi).filter(k => (isi[k].capaian || '').trim()).length, b = $('#simpan'); if (b) b.disabled = !nIsi; const bd = $('.badge.info', v); if (bd && /baris/.test(bd.textContent)) bd.textContent = nIsi + ' baris terisi'; };
   v.addEventListener('input', simpan); v.addEventListener('change', simpan);
   on(v, 'click', '#simpan', async (e, b) => { await tombolSibuk(b, async () => { const items = Object.keys(isi).filter(n => (isi[n].capaian || '').trim()).map(n => Object.assign({ nis: n, jenis: J()[0], kualitas: 'Lancar' }, isi[n])); const r = await api('hafalan.batch', { tanggal, items }); toast(r.message, r.success ? '' : 'error'); if (r.success) { isi = {}; Api.epoch++; muat(); } }); });
+  on(v, 'click', '#kj', () => dialogJenisSetoran(() => draw()));
   on(v, 'click', '[data-act=muat-ulang]', muat);
   return () => { mati = true; };
+}
+
+/* Kelola jenis setoran / mutaba'ah — dapat dipakai admin & ustadz */
+function dialogJenisSetoran(selesai) {
+  let daftar = (Meta().jenisSetoran || []).slice();
+  const baris = () => daftar.map((j, i) => `<div class="row" data-i="${i}"><input class="in" value="${esc(j)}" maxlength="40" aria-label="Jenis setoran ${i + 1}"><button type="button" class="btn sm icon" data-mv="-1" ${i === 0 ? 'disabled' : ''} aria-label="Naikkan">${ico('arrow_upward', 'sm')}</button><button type="button" class="btn sm icon" data-mv="1" ${i === daftar.length - 1 ? 'disabled' : ''} aria-label="Turunkan">${ico('arrow_downward', 'sm')}</button><button type="button" class="btn sm icon danger" data-rm aria-label="Hapus">${ico('delete', 'sm')}</button></div>`).join('');
+  modal({ title: 'Kelola jenis setoran', body: `<p class="sub">Daftar ini muncul di kolom <b>Jenis</b> pada lembar setoran. Urutan paling atas menjadi pilihan awal.</p><div class="notice info mt-s">${ico('info')}<span>Mengubah nama atau menghapus jenis <b>tidak mengubah catatan lama</b>; riwayat tetap memakai nama saat dicatat.</span></div><div class="col mt" id="jl"></div><button type="button" class="btn sm mt" id="jadd">${ico('add', 'sm')} Tambah jenis</button>`,
+    onOpen: bg => {
+      const box = $('#jl', bg), baca = () => $$('input', box).map(i => i.value), tampil = () => { box.innerHTML = baris(); };
+      tampil();
+      on(bg, 'click', '#jadd', () => { daftar = baca(); if (daftar.length >= 20) return toast('Maksimal 20 jenis.', 'warn'); daftar.push(''); tampil(); const ins = $$('input', box); ins[ins.length - 1].focus(); });
+      on(box, 'click', '[data-rm]', (e, b) => { daftar = baca(); daftar.splice(+b.closest('[data-i]').dataset.i, 1); tampil(); });
+      on(box, 'click', '[data-mv]', (e, b) => { daftar = baca(); const i = +b.closest('[data-i]').dataset.i, j = i + Number(b.dataset.mv); if (j >= 0 && j < daftar.length) { const t = daftar[i]; daftar[i] = daftar[j]; daftar[j] = t; } tampil(); });
+    },
+    actions: [{ label: 'Batal' },
+      { label: 'Kembalikan bawaan', cls: 'danger', onClick: async () => { if (!(await konfirmasi('Kembalikan daftar jenis setoran ke bawaan?', 'Kembalikan', true))) return false; const r = await api('hafalan.jenis', { reset: true }); if (!r.success) { toast(r.message, 'error'); return false; } Sesi.meta = Object.assign(Sesi.meta || {}, { jenisSetoran: r.data.daftar }); toast(r.message); selesai(); } },
+      { label: `${ico('save', 'sm')} Simpan`, cls: 'primary', onClick: async bg => { const nilai = $$('#jl input', bg).map(i => i.value); const r = await api('hafalan.jenis', { daftar: nilai }); if (!r.success) { toast(r.message, 'error'); return false; } Sesi.meta = Object.assign(Sesi.meta || {}, { jenisSetoran: r.data.daftar }); toast(r.message); selesai(); } }] });
 }
