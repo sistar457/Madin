@@ -10,6 +10,7 @@ const NAV = [
   { r: '/presensi', t: 'Presensi QR', i: 'qr_code_scanner', roles: STAF },
   { r: '/anak/presensi', t: 'Presensi', i: 'event_available', roles: ['wali'] },
   { r: '/hafalan', t: 'Hafalan & Hanca', i: 'menu_book', roles: STAF },
+  { r: '/pemantau', t: 'Pemantau Setoran', i: 'monitoring', roles: STAF },
   { r: '/anak/hafalan', t: 'Hafalan', i: 'menu_book', roles: ['wali'] },
   { r: '/keuangan', t: 'Keuangan SPP', i: 'account_balance_wallet', roles: ['admin'] },
   { r: '/spp', t: 'SPP', i: 'account_balance_wallet', roles: ['wali'] },

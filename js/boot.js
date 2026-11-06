@@ -16,6 +16,7 @@
   halaman('/santri', 'Data Santri', pageSantri, STAF);
   halaman('/presensi', 'Presensi QR', pagePresensi, STAF);
   halaman('/hafalan', 'Hafalan & Hanca', pageHafalan, STAF);
+  halaman('/pemantau', 'Pemantau Setoran', pagePemantau, STAF);
   halaman('/keuangan', 'Keuangan SPP', pageKeuangan, ['admin']);
   halaman('/materi', 'Materi Belajar', pageMateri, SEMUA);
   halaman('/laporan', 'Laporan', pageLaporan, STAF);
